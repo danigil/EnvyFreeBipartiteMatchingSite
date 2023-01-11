@@ -58,19 +58,22 @@ def algo_page():
 
             flash(f'Calculated, top_nodes: {top_nodes}!', 'success')
             logging.log(level=logging.DEBUG, msg=f"calculating matching")
+            try:
+                ret_edges = calc_response(type, edges, top_nodes)
+                now = datetime.now()
+                file_name = f'{now.strftime("%d-%m-%Y-%H-%M-%S")}.csv'
 
-            ret_edges = calc_response(type, edges, top_nodes)
-            now = datetime.now()
-            file_name = f'{now.strftime("%d-%m-%Y-%H-%M-%S")}.csv'
+                logging.log(level=logging.DEBUG, msg=f"writing to file_name: {file_name}")
 
-            logging.log(level=logging.DEBUG, msg=f"writing to file_name: {file_name}")
+                with open(f'website_code/static/outputs/{file_name}', 'w', newline='') as f:
+                    writer = csv.writer(f)
+                    writer.writerows(ret_edges)
 
-            with open(f'website_code/static/outputs/{file_name}', 'w', newline='') as f:
-                writer = csv.writer(f)
-                writer.writerows(ret_edges)
-
-            logging.log(level=logging.DEBUG, msg=f"redirecting to download page")
-            return redirect(url_for(".download_output_page", name=file_name))
+                logging.log(level=logging.DEBUG, msg=f"redirecting to download page")
+                return redirect(url_for(".download_output_page", name=file_name))
+            except:
+                flash(f'ERROR matching calculation threw exception (possibly logically flawed input)', category="error")
+                return render_template('algo.html', title='Algo', form=form)
         else:
             flash(f'ERROR missing input', category="error")
 
