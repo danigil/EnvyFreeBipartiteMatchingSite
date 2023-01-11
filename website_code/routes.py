@@ -1,5 +1,5 @@
 import csv
-import logging
+# import logging
 import os
 
 import networkx as nx
@@ -29,16 +29,16 @@ def algo_page():
     type = request.args["type"]
     if not type:
         type = "non_weighted"
-    logging.log(level=logging.DEBUG,msg=f"type: {type}")
+#     logging.log(level=logging.DEBUG,msg=f"type: {type}")
     form = EnvyFreeMatchingCSVAndTextForm()
 
     if not form.validate_on_submit():
-        logging.log(level=logging.DEBUG, msg=f"rendering algo page")
+#         logging.log(level=logging.DEBUG, msg=f"rendering algo page")
         return render_template('algo.html', title=f'{type}_algo', form=form, type=type)
     else:
         input_file = form.file.data
         input_text = form.top_nodes.data
-        logging.log(level=logging.DEBUG, msg=f"got form:\n\tinput_file: {input_file}\n\tinput_text: {input_text}")
+#         logging.log(level=logging.DEBUG, msg=f"got form:\n\tinput_file: {input_file}\n\tinput_text: {input_text}")
 
         if input_file and input_text:
             top_nodes = [int(num) for num in input_text.split(',')]
@@ -46,31 +46,31 @@ def algo_page():
             edges = read_csv(input_file, header=None)
             edges = [tup for tup in edges.itertuples(index=False, name=None)]
 
-            logging.log(level=logging.DEBUG, msg=f"edges: {edges}")
-            logging.log(level=logging.DEBUG, msg=f"top_nodes: {top_nodes}")
+#             logging.log(level=logging.DEBUG, msg=f"edges: {edges}")
+#             logging.log(level=logging.DEBUG, msg=f"top_nodes: {top_nodes}")
 
 
             if not is_valid_input_csv(type, edges):
-                logging.log(level=logging.DEBUG, msg=f"edge csv file is malformed, EXITING")
+#                 logging.log(level=logging.DEBUG, msg=f"edge csv file is malformed, EXITING")
 
                 flash(f'ERROR edge csv file is malformed', category="error")
                 return render_template('algo.html', title='Algo', form=form)
             
             try:
                 
-                logging.log(level=logging.DEBUG, msg=f"calculating matching")
+#                 logging.log(level=logging.DEBUG, msg=f"calculating matching")
                 
                 ret_edges = calc_response(type, edges, top_nodes)
                 now = datetime.now()
                 file_name = f'{now.strftime("%d-%m-%Y-%H-%M-%S")}.csv'
 
-                logging.log(level=logging.DEBUG, msg=f"writing to file_name: {file_name}")
+#                 logging.log(level=logging.DEBUG, msg=f"writing to file_name: {file_name}")
 
                 with open(f'website_code/static/outputs/{file_name}', 'w', newline='') as f:
                     writer = csv.writer(f)
                     writer.writerows(ret_edges)
 
-                logging.log(level=logging.DEBUG, msg=f"redirecting to download page")
+#                 logging.log(level=logging.DEBUG, msg=f"redirecting to download page")
                 flash(f'Calculated, top_nodes: {top_nodes}!', 'success')
                 return redirect(url_for(".download_output_page", name=file_name))
             except:
@@ -104,11 +104,11 @@ algorithms = {
 
 def calc_response(type, edges, top_nodes):
     if type =='non_weighted':
-        logging.log(level=logging.DEBUG, msg=f"calc_response: non_weighted")
+#         logging.log(level=logging.DEBUG, msg=f"calc_response: non_weighted")
 
         G = nx.Graph(edges)
     else:
-        logging.log(level=logging.DEBUG, msg=f"calc_response: weighted")
+#         logging.log(level=logging.DEBUG, msg=f"calc_response: weighted")
 
         G = nx.Graph()
         G.add_weighted_edges_from(edges)
@@ -117,7 +117,7 @@ def calc_response(type, edges, top_nodes):
     current_algo = algorithms[type]
 
     matching_ret = current_algo(G, top_nodes=top_nodes)
-    logging.log(level=logging.DEBUG, msg=f"calc_response: return: {matching_ret}")
+#     logging.log(level=logging.DEBUG, msg=f"calc_response: return: {matching_ret}")
 
     matching_edges = list(
         map(lambda tup: (str(tup[0]), str(tup[1])), filter(lambda tup: matching_ret[tup[0]] == tup[1], edges)))
