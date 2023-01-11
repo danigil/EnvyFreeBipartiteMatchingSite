@@ -57,7 +57,7 @@ def algo_page():
                 return render_template('algo.html', title='Algo', form=form)
             
             try:
-                flash(f'Calculated, top_nodes: {top_nodes}!', 'success')
+                
                 logging.log(level=logging.DEBUG, msg=f"calculating matching")
                 
                 ret_edges = calc_response(type, edges, top_nodes)
@@ -71,6 +71,7 @@ def algo_page():
                     writer.writerows(ret_edges)
 
                 logging.log(level=logging.DEBUG, msg=f"redirecting to download page")
+                flash(f'Calculated, top_nodes: {top_nodes}!', 'success')
                 return redirect(url_for(".download_output_page", name=file_name))
             except:
                 flash(f'ERROR matching calculation threw exception (possibly logically flawed input)', category="error")
