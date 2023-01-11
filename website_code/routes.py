@@ -55,10 +55,11 @@ def algo_page():
 
                 flash(f'ERROR edge csv file is malformed', category="error")
                 return render_template('algo.html', title='Algo', form=form)
-
-            flash(f'Calculated, top_nodes: {top_nodes}!', 'success')
-            logging.log(level=logging.DEBUG, msg=f"calculating matching")
+            
             try:
+                flash(f'Calculated, top_nodes: {top_nodes}!', 'success')
+                logging.log(level=logging.DEBUG, msg=f"calculating matching")
+                
                 ret_edges = calc_response(type, edges, top_nodes)
                 now = datetime.now()
                 file_name = f'{now.strftime("%d-%m-%Y-%H-%M-%S")}.csv'
