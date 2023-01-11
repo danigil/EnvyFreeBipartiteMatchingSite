@@ -4,3 +4,4 @@ Flask-WTF~=1.0.1
 networkx
 pandas
 gunicorn
+scipy
