@@ -26,21 +26,21 @@ def article_page():
 
 @app.route("/algo", methods=['GET', 'POST'])
 def algo_page():
-    type = request.args["type"]
-    if not type:
-        type = "non_weighted"
-#     logging.log(level=logging.DEBUG,msg=f"type: {type}")
+    type_arg = request.args["type"]
+    if not type_arg:
+        type_arg = "non_weighted"
+#     logging.log(level=logging.DEBUG,msg=f"type_arg: {type_arg}")
     form = EnvyFreeMatchingCSVAndTextForm()
 
     if not form.validate_on_submit():
 #         logging.log(level=logging.DEBUG, msg=f"rendering algo page")
-        return render_template('algo.html', title=f'{type}_algo', form=form, type=type)
+        return render_template('algo.html', title=f'{type_arg}_algo', form=form, type=type_arg)
     else:
         input_file = form.file.data
         input_text = form.top_nodes.data
 #         logging.log(level=logging.DEBUG, msg=f"got form:\n\tinput_file: {input_file}\n\tinput_text: {input_text}")
 
-        if input_file and input_text:
+        if (input_file is not None) and (not input_file.closed) and os.fstat(input_file.fileno()).st_size > 0 and (input_text is not None):
             top_nodes = [int(num) for num in input_text.split(',')]
 
             edges = read_csv(input_file, header=None)
@@ -50,7 +50,7 @@ def algo_page():
 #             logging.log(level=logging.DEBUG, msg=f"top_nodes: {top_nodes}")
 
 
-            if not is_valid_input_csv(type, edges):
+            if not is_valid_input_csv(type_arg, edges):
 #                 logging.log(level=logging.DEBUG, msg=f"edge csv file is malformed, EXITING")
 
                 flash(f'ERROR edge csv file is malformed', category="error")
@@ -60,7 +60,7 @@ def algo_page():
                 
 #                 logging.log(level=logging.DEBUG, msg=f"calculating matching")
                 
-                ret_edges = calc_response(type, edges, top_nodes)
+                ret_edges = calc_response(type_arg, edges, top_nodes)
                 now = datetime.now()
                 file_name = f'{now.strftime("%d-%m-%Y-%H-%M-%S")}.csv'
 
@@ -78,6 +78,7 @@ def algo_page():
                 return render_template('algo.html', title='Algo', form=form)
         else:
             flash(f'ERROR missing input', category="error")
+            return render_template('algo.html', title=f'{type_arg}_algo', form=form, type=type_arg)
 
 
 @app.route("/download")
