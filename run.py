@@ -4,4 +4,4 @@ from website_code import app
 # logging.basicConfig(level=logging.DEBUG)
 
 if __name__ == '__main__':
-  app.run(debug=False, host="0.0.0.0", port=25656)
+  app.run(debug=True, host="localhost", port=25656)
