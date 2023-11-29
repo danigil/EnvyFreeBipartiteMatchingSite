@@ -5,7 +5,7 @@ in bipartite graphs.
 ### Getting started
 First, create a new virtual environment and clone the project locally.
 Make sure that all the relevant packages are installed.
-Now, you need to run the project. Go to: ```networkx -> algorithms -> bipartite ->website```.
+Now, to run the project:  
 Run the file: ```run.py```. After these steps, the website should run. To use the website, open your
 browser and write: ```localhost:5000```. After doing so, you should be able to see the next screen:![image](https://github.com/danigil/networkx/assets/93070344/e870d217-d509-4e6f-baa4-b04a3a5a0d8f)
 
