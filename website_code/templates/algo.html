@@ -1,0 +1,129 @@
+<!-- First step: define <div class="form-group"> for each field, with two lines: .label and the field itself. -->
+<!-- Second step: add error-check to each field. -->
+{% extends "layout.html" %}
+{% block content %}
+
+<form method="POST" action="" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <legend class="border-bottom mb-4">Enter your Graph! (edge representation)</legend>
+    <p>
+        {% if type == "non_weighted" %}
+        Example Input:<br>
+        &emsp;Edges: (from_node, to_node)<br>
+            &emsp;&emsp;0,8<br>
+            &emsp;&emsp;1,9<br>
+            &emsp;&emsp;1,10<br>
+            &emsp;&emsp;2,8<br>
+            &emsp;&emsp;2,11<br>
+            &emsp;&emsp;3,9<br>
+            &emsp;&emsp;3,11<br>
+            &emsp;&emsp;4,8<br>
+            &emsp;&emsp;4,10<br>
+            &emsp;&emsp;4,11<br>
+            &emsp;&emsp;5,9<br>
+            &emsp;&emsp;5,10<br>
+            &emsp;&emsp;5,11<br>
+            &emsp;&emsp;6,10<br>
+            &emsp;&emsp;6,12<br>
+            &emsp;&emsp;7,11<br>
+            &emsp;&emsp;7,13<br>
+            &emsp;&emsp;7,14
+        {% else %}
+        Example Input:<br>
+        &emsp;Edges: (from_node, to_node, weight)<br>
+        &emsp;&emsp;5,4,1.0<br>
+        &emsp;&emsp;7,4,111.0<br>
+        &emsp;&emsp;5,3,1.0<br>
+        &emsp;&emsp;7,2,1.0<br>
+        &emsp;&emsp;8,2,1.0<br>
+        &emsp;&emsp;6,1,1.0<br>
+        &emsp;&emsp;5,1,1.0<br>
+        &emsp;&emsp;7,3,1.0<br>
+        {% endif %}
+        <br>
+<!--        &emsp;Top Nodes: (comma separated positive integers)<br>-->
+<!--        &emsp;&emsp;0,1,2<br>-->
+
+    </p>
+
+    <p>* required field</p>
+
+    <script>
+        function add_field() {
+            var total_text = document.getElementsByClassName("input_text");
+            total_text = total_text.length + 1;
+            field_div = document.getElementById("field_div");
+            new_input = "<li id='input_text" + total_text +
+                "_wrapper'><input type='text' class='input_text' name='input_text[]' id='input_text" +
+                total_text + "' placeholder='Enter Edge'></li>";
+            field_div.insertAdjacentHTML('beforeend', new_input);
+        }
+
+        function remove_field() {
+            var total_text = document.getElementsByClassName("input_text");
+            document.getElementById("input_text" + total_text.length + "_wrapper").remove();
+        }
+    </script>
+
+    <div class="form-group">
+        {{ form.edges.label(class="form-control-label") }}
+        {% if form.edges.errors %}
+        <script>
+            undo_loading()
+        </script>
+        {{ form.edges(class="form-control form-control-lg is-invalid") }}
+        <div class="invalid-feedback">
+            {% for error in form.edges.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+        </div>
+        {% else %}
+        {{ form.edges(class="form-control form-control-lg") }}
+        {% endif %}
+    </div>
+
+
+    <div class="form-group" hidden>
+        {{ form.top_nodes.label(class="form-control-label") }}
+        {% if form.top_nodes.errors %}
+        <script>
+            undo_loading()
+        </script>
+        {{ form.top_nodes(class="form-control form-control-lg is-invalid") }}
+        <div class="invalid-feedback">
+            {% for error in form.top_nodes.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+        </div>
+        {% else %}
+        {{ form.top_nodes(class="form-control form-control-lg") }}
+        {% endif %}
+    </div>
+    <script>
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+
+    </script>
+    <div class="form-group">
+        {{ form.checkbox.label(class="form-control-label") }}
+        {{ form.checkbox() }}
+    </div>
+    <div class="form-group">
+        {{ form.submit(class="btn btn-outline-info", onclick="loading();", id="submit") }}
+        <div class="loader"></div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    {% if category == "undo_loading" %}
+    <script>
+        undo_loading();
+    </script>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</form>
+
+
+{% endblock content %}
